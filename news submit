@@ -1,0 +1,133 @@
+
+  <?php
+  $servername = "localhost";
+  $username = "root";
+  $password = "root";
+  $dbname = "home";
+
+// 创建连接
+  $biaotiErr = $zuozheErr = $zhengwenErr = "";
+
+  if ($_SERVER["REQUEST_METHOD"] == "POST")
+  {
+    if (empty($_POST["biaoti"]))
+    {
+      $biaotiErr = "标题是必需的";
+    }
+    else
+    {
+      $biaoti = test_input($_POST["biaoti"]);
+        // 检测标题是否只包含字母跟空格
+      if (!preg_match("/^[a-zA-Z ]*$/",$biaoti))
+      {
+        $biaotiErr = "只允许字母和空格"; 
+      }
+    }
+
+    if (empty($_POST["zuozhe"]))
+    {
+      $zuozheErr = "作者是必需的";
+    }
+    else
+    {
+      $zuozhe = test_input($_POST["zuozhe"]);
+        // 检测作者填写格式是否合法
+      if (!preg_match("/^[a-zA-Z ]*$/",$zuozhe))
+      {
+        $zuozheErr = "非法作者填写格式"; 
+      }
+    }
+    
+    if (empty($_POST["zhengwen"]))
+    {
+      $zhengwenErr = "正文不能为空";
+    }
+    else
+    {
+      $zhengwen = test_input($_POST["zhengwen"]);
+        // 检测正文格式是否合法
+      if (!preg_match("/^[a-zA-Z ]*$/",$zhengwen))
+      {
+        $zhengwenErr = "非法的正文格式"; 
+      }
+    }
+    
+    
+  }
+
+  function test_input($data)
+  {
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+  }
+
+
+
+  if (!empty($_POST)){
+    $biaoti = $_POST['biaoti'];
+    $zuozhe = $_POST['zuozhe'];
+    $zhengwen = $_POST['zhengwen'];
+
+
+$time = date ('Y-m-d');//时间
+$conn = new mysqli($servername, $username, $password,$dbname);
+
+
+echo "连接成功";
+$sql= "INSERT INTO `news` (`biaoti`,`zuozhe`,`zhengwen`,`time`) VALUES('" .$biaoti."','".$zuozhe."','".$zhengwen."','".$time."')";
+$conn->query($sql);
+if ($conn->query($sql) === TRUE) {
+    echo "新记录插入成功";
+} else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
+}
+
+
+}
+?>
+
+<!doctype html>
+
+<html>
+<body>
+<head>
+  <style>
+.error {color: #FF0000;}
+</style>
+</head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+
+
+<table>
+ <caption><h2>BBC新闻晨报</h2></caption>
+ <p><span class="error">* 必需字段。</span></p>
+ <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
+  <tr>
+   <th>标题：</th>
+   <td ><input type="text" name="biaoti" size="20" />
+    <span class="error">* <?php echo $biaotiErr;?></span></td>
+  </tr>
+  <tr>
+   <th>作者：</th>
+   <td ><input type="text" name="zuozhe" size="20"  />
+    <span class="error">* <?php echo $zuozheErr;?></span></td>
+  </tr>
+  <tr>
+   <th>正文：</th>
+   <td><textarea name="zhengwen" rows="4" cols="40" ></textarea>
+    <span class="error">* <?php echo $zhengwenErr;?></span></td>
+  </tr>
+  <tr>	
+   <td colspan="2" align="center">
+    <input type="submit" name="submit" value="提交">
+    <?php echo $time ?>
+<p>相关资料</p>
+<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" enctype="multipart/form-data">
+<label for="file">打包上传：</label>
+  <input type="file" name="file" id="file"><br>
+  <input type="submit" name="submit" value="提交">
+</form>
+  </body>
+  </html>
