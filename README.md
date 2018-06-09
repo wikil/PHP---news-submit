@@ -1,3 +1,3 @@
 # PHP---news-submit
-a chance
+a chance /n
 Using layui
